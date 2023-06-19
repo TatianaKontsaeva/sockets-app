@@ -1,0 +1,12 @@
+{
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": true,
+  "cSpell.ignoreWords": [
+    "Запуск",
+    "Запущен",
+    "клиент",
+    "маршруты",
+    "сервера",
+    "сокет"
+  ]
+}
