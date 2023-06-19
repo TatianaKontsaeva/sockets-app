@@ -22,7 +22,17 @@ app.listen(3000, async () => {
 
 //Запуск сокет-сервера
 io.on("connection", (socket) => {
-  console.log("Запущен клиент", socket);
+  socket.emit("connected", {
+    message: "connect successful",
+  });
+
+  socket.on("message", (arg) => {
+    console.log(arg);
+  });
+
+  socket.on("disconnect", (reason) => {
+    console.log('socket out', reason);
+  });
 });
 
 httpServer.listen(3001);
