@@ -1,6 +1,6 @@
-<template>
+<template> 
   <q-page class="flex-center">
-    <div class="q-pa-md justify-between">
+    <div class="q-pa-lg flex-center">
       <div v-for="message in messages" :key="message">
         <q-chat-message :sent="name === message.name" :name="message.name">
           <p>{{ message.message }}</p></q-chat-message
@@ -76,8 +76,5 @@ export default {
 <style>
 .input {
   width: 50%;
-}
-.chat-message {
-  width: 600px;
 }
 </style>
