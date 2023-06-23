@@ -1,17 +1,14 @@
 <template>
   <q-page class="flex-center">
-    <div class="q-pa-md row justify-center">
-      <div  style="width: 400px;" >
-        <h3>Chat</h3>
-        <q-chat-message 
-          name="me" 
-          :text="['hey, how are you?']" 
-          sent 
-        />
-        <q-chat-message 
-          name="Jane" 
-          :text="['doing fine, how r you?']" 
-        />
+    <div class="q-pa-md justify-between">
+      <div v-for="message in messages" :key="message">
+        <q-chat-message :sent="name === message.name" :name="message.name">
+          <p>{{ message.message }}</p></q-chat-message
+        >
+        <!-- <q-chat-message :name="message.name" ><p></p>
+         </q-chat-message
+        > -->
+        <!-- <q-chat-message name="Jane" :text="[mess]" /> -->
       </div>
     </div>
     <div class="flex-center column">
@@ -20,76 +17,67 @@
         class="q-pa-md input" 
         v-model="room_id" 
       /> -->
-      <q-input 
+      <q-input
         label="Your name"
-        outlined 
-        class="q-pa-md input" 
+        outlined
+        class="q-pa-md input"
         v-model="name"
       />
-      <q-input 
+      <q-input
         label="Your message"
-        outlined 
-        class="q-pa-md input" 
-        v-model="message" 
-        @keydown.enter="send" 
+        outlined
+        class="q-pa-md input"
+        v-model="message"
+        @keydown.enter="send"
       />
-      <q-btn 
-        label="Send" 
-        @click="send"
-        @keydown.enter="send" 
-      />
+      <q-btn label="Send" @click="send" />
     </div>
   </q-page>
 </template>
 
 <script>
-import { defineComponent } from "vue";
 const { io } = require("socket.io-client");
-
-//with middleware
-// const socket = io("http://localhost:3001", {
-//   auth: {
-//     token: 'secret'
-//   }
-// });
-
-// socket.on("connected", (arg) => {
-//   console.log(arg); // world
-// });
-
 const socket = io("http://localhost:3001");
 
-socket.on("message", (data) => {
-  console.log(data);
-});
-
-socket.on("connection_error", (data) => {
-  console.log(data);
-});
-
-export default defineComponent({
+export default {
   name: "IndexPage",
-
   data() {
     return {
+      messages: [],
       name: null,
       message: null,
-      room_id: 1,
+      room_id: null,
     };
   },
   methods: {
     send() {
-      socket.emit("message", {
+      const message = {
         name: this.name,
         message: this.message,
         room_id: this.room_id,
-      });
+      };
+
+      socket.emit("message", message);
+      this.message = "";
     },
   },
-});
+  mounted() {
+    socket.on("connect_error", (error) => {
+      console.error(error);
+    });
+
+    socket.on("message", (data) => {
+      console.log(data)
+      this.messages.unshift(data);
+    });
+  },
+};
 </script>
 <style>
 .input {
   width: 50%;
+}
+.chat-message {
+  width: 600px;
 }
 </style>
