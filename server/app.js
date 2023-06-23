@@ -13,7 +13,7 @@ const io = new Server(httpServer, {
 
 //маршруты для http
 app.get("/", async (req, res) => {
-  return res.send(123);
+  return res.sendFile(__dirname + '/IndexPage.vue');
 });
 
 app.listen(3000, async () => {
@@ -21,17 +21,20 @@ app.listen(3000, async () => {
 });
 
 //Запуск сокет-сервера
-io.use((socket, next) => {
-  const token = socket.handshake.auth.token;
-  if (token === "secret") {
-    next();
-  } else {
-    console.log(socket, "not auth");
-    socket.emit("connection_error", {
-      message: "not auth",
-    });
-  }
-});
+
+//with middleware
+
+// io.use((socket, next) => {
+//   const token = socket.handshake.auth.token;
+//   if (token === "secret") {
+//     next();
+//   } else {
+//     console.log(socket, "not auth");
+//     socket.emit("connection_error", {
+//       message: "not auth",
+//     });
+//   }
+// });
 
 io.on("connection", (socket) => {
   socket.on("message", (data) => {
@@ -44,9 +47,17 @@ io.on("connection", (socket) => {
     console.log(arg);
   });
 
+//количество сокетов онлайн
+setInterval(() => {
+  const count = io.engine.clientsCount;
+  console.log(count);
+}, 5000);
+
+  //disconnect
   socket.on("disconnect", (reason) => {
     console.log("socket out", reason);
   });
 });
+
 
 httpServer.listen(3001);
